@@ -20,6 +20,16 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Conferir versão da tag
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: pwsh
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          $tag = $env:TAG.TrimStart("v")
+          $ver = (Select-String -Path src\version.ahk -Pattern 'APP_VERSION := "([^"]+)"').Matches[0].Groups[1].Value
+          if ($tag -ne $ver) { throw "A tag v$tag não bate com APP_VERSION $ver em src/version.ahk" }
+
       - name: Baixar AutoHotkey e Ahk2Exe
         shell: pwsh
         env:
@@ -77,7 +87,13 @@ jobs:
         with:
           name: HotPaste
 
+      - name: Notas com o SHA256
+        run: |
+          HASH=$(sha256sum HotPaste.exe | cut -d' ' -f1 | tr a-z A-Z)
+          printf 'SHA256 do HotPaste.exe:\n\n    %s\n\nPara conferir no PowerShell: `Get-FileHash HotPaste.exe`\n\nO arquivo ainda não tem assinatura digital, então o Windows pode mostrar "Fornecedor desconhecido". Veja no README como abrir.\n' "$HASH" > notes.md
+
       - name: Publicar Release
         uses: softprops/action-gh-release@v2
         with:
           files: HotPaste.exe
+          body_path: notes.md

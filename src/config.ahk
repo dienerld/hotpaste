@@ -25,6 +25,14 @@ class Config {
         return this.Save()
     }
 
+    ; Troca os 8 textos de uma vez (texts[1..8]) e grava uma única vez.
+    ; Devolve true se gravou. Se não gravou, os textos ficam só em memória.
+    SetAll(texts) {
+        loop Config.SLOTS
+            this.slots[A_Index] := Config.NormalizeNewlines(texts[A_Index])
+        return this.Save()
+    }
+
     ; Vazio = nada além de espaço/tab/quebra de linha.
     IsFilled(n) => Trim(this.slots[n], " `t`r`n") != ""
 

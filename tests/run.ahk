@@ -2,12 +2,14 @@
 #SingleInstance Force
 
 #Include lib.ahk
+#Include ..\src\version.ahk
 #Include ..\src\config.ahk
 #Include ..\src\hotkeys.ahk
 #Include ..\src\tray.ahk
 #Include test_config.ahk
 #Include test_hotkeys.ahk
 #Include test_startup.ahk
+#Include test_v11.ahk
 
 ; Erro não tratado não pode abrir diálogo (travaria o CI): registra e encerra.
 OnError(FatalError)
@@ -20,4 +22,5 @@ FatalError(e, mode) {
 RunConfigTests()
 RunHotkeyTests()
 RunStartupTests()
+RunSaveAndVersionTests()
 T.Finish()

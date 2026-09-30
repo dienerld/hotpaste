@@ -3,8 +3,9 @@
 
 ;@Ahk2Exe-SetName HotPaste
 ;@Ahk2Exe-SetDescription HotPaste - textos prontos nas teclas F1 a F8
-;@Ahk2Exe-SetVersion 1.0.0
+;@Ahk2Exe-SetVersion 1.1.0
 
+#Include version.ahk
 #Include config.ahk
 #Include hotkeys.ahk
 #Include tray.ahk

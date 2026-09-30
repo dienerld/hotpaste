@@ -79,7 +79,7 @@ class TrayMenu {
         m.Add("Sair", (*) => ExitApp())
         m.Default := "Abrir"
         m.ClickCount := 1
-        A_IconTip := "HotPaste"
+        A_IconTip := "HotPaste v" APP_VERSION
         this.Refresh()
     }
 
