@@ -4,7 +4,7 @@ Cole textos prontos com uma tecla. Escolha um texto para cada tecla **F1 a F8**;
 
 ## Como usar
 
-1. Baixe o `HotPaste.exe` na página de [Releases](../../releases) e dê dois cliques. Não precisa instalar.
+1. Baixe o `HotPaste.exe` na página de [Releases](../../releases) e dê dois cliques. Não precisa instalar. Se baixou um `.zip`, **extraia o `.exe` e mova para a pasta definitiva (por exemplo, Documentos) antes de abrir pela primeira vez**: abrir de dentro do zip roda de uma pasta temporária, e o início automático e o `.ini` acabam lá. (A página de Releases fica vazia até sair a primeira versão com tag `v…`; por enquanto o `.exe` vem do artefato do Actions: `gh run download` ou a aba Actions do repositório.)
 2. Na janela, escreva o texto de cada tecla. Tudo é salvo sozinho.
 3. Feche a janela (X): o HotPaste continua funcionando na **bandeja** (perto do relógio). Clique no ícone para reabrir.
 4. Aperte **F1 a F8** em qualquer programa para colar o texto.
@@ -12,11 +12,14 @@ Cole textos prontos com uma tecla. Escolha um texto para cada tecla **F1 a F8**;
 - Tecla sem texto funciona normalmente (F5 continua atualizando a página).
 - **Iniciar com o Windows** já vem marcado na primeira vez, para o HotPaste estar sempre pronto depois de reiniciar. Desmarque na janela ou no menu do ícone da bandeja (botão direito) se não quiser. Também dá para desativar em Gerenciador de Tarefas → Inicializar.
 - Clique com o botão direito no ícone da bandeja para **Abrir** ou **Sair**.
-- Os textos ficam no arquivo `HotPaste.ini`, ao lado do `.exe`. Copie os dois para levar para outro computador.
+- Os textos ficam no arquivo `HotPaste.ini`, ao lado do `.exe`. Copie os dois para levar para outro computador; o início automático **não** é ligado sozinho lá, marque a caixa na janela.
+- Em muitos notebooks as teclas F1–F8 precisam da tecla **Fn** (ou do Fn Lock ligado).
+- Apertar F1 a F8 **dentro da janela do HotPaste** não cola nada (assim você pode digitar e testar sem sujar os campos).
 
 ## Limitações
 
 - Programas abertos **como administrador** não recebem as teclas de um app comum. Se F1–F8 não funcionar em um programa assim, abra o HotPaste como administrador também.
+- **Não guarde senhas nem dados sensíveis.** Os textos ficam em texto puro no `HotPaste.ini` e passam pela área de transferência (e pelo histórico do Win+V).
 - Alguns campos de senha e conexões remotas bloqueiam o colar (Ctrl+V) e não recebem o texto.
 - Não coloque o HotPaste em pastas protegidas (como `Arquivos de Programas`), senão ele não consegue salvar o `.ini`. Use, por exemplo, a Área de Trabalho ou Documentos.
 - Alguns antivírus podem avisar sobre apps feitos com AutoHotkey (falso positivo). O código é aberto e está neste repositório.
@@ -36,6 +39,8 @@ Rode no Windows, com o `.exe` do Actions, antes de cada versão:
 - [ ] Texto com acentos (`ação`, `ü`) e emoji cola idêntico.
 - [ ] Texto com várias linhas cola com as quebras de linha.
 - [ ] Texto com barra invertida (`C:\novo\nome`) cola idêntico.
+- [ ] Apertar F1 dentro da janela do HotPaste não cola nada.
+- [ ] A janela cabe inteira em 1366×768 e em 1080p com escala de 150%.
 - [ ] Slot vazio: F5 atualiza a página; F2 renomeia arquivo no Explorer.
 - [ ] Slot só com espaços: a tecla ainda funciona normalmente.
 - [ ] Copie uma imagem, aperte F1, depois cole (Ctrl+V): a imagem continua na área de transferência.
