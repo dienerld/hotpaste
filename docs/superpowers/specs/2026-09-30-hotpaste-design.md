@@ -1,4 +1,4 @@
-# replace-f — Design
+# HotPaste — Design
 
 ## Objetivo
 
@@ -9,6 +9,8 @@ App Windows para público leigo que associa textos pré-definidos às teclas F1 
 ## Decisões tomadas
 
 - Funciona em qualquer programa, enquanto o processo do app estiver rodando (ícone na bandeja).
+- Nome: **HotPaste** (`HotPaste.exe`); a pasta do repositório continua `replace-f`.
+- Ícone: `assets/icon.svg` (fonte), `assets/icon.ico` (16–256 px) e `assets/icon.png` (prévia) — tecla azul com "F" e linhas de texto. O `.ico` é usado no `.exe` (Ahk2Exe `/icon`) e no ícone da bandeja.
 - Tecnologia: **AutoHotkey v2**, compilado em um único `.exe` (sem instalador, sem admin).
 - Desenvolvimento no Linux; teste em uma máquina Windows; build do `.exe` via **GitHub Actions** (`windows-latest`).
 - Slot vazio mantém a função original da tecla (ex.: F5 atualiza); slot preenchido vira texto e bloqueia a tecla original.
@@ -38,6 +40,7 @@ Outras teclas além de F1–F8, combinações com Ctrl/Alt, perfis de presets, v
 
 ```
 replace-f/
+├── assets/             # icon.svg, icon.ico, icon.png
 ├── src/
 │   ├── main.ahk        # ponto de entrada: liga as partes
 │   ├── config.ahk      # ler/gravar o .ini (8 slots)
@@ -65,7 +68,7 @@ Cada arquivo tem uma responsabilidade. `hotkeys.ahk` conhece apenas o `config` (
 
 ## Build
 
-GitHub Actions em `windows-latest`, a cada push: instala o AutoHotkey v2, compila `src/main.ahk` com o Ahk2Exe e publica `replace-f.exe` como artefato. Ao criar uma tag (ex.: `v1.0`), anexa o `.exe` a uma Release.
+GitHub Actions em `windows-latest`, a cada push: instala o AutoHotkey v2, compila `src/main.ahk` com o Ahk2Exe e publica `HotPaste.exe` como artefato. Ao criar uma tag (ex.: `v1.0`), anexa o `.exe` a uma Release.
 
 ## Testes
 
