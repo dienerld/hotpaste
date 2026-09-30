@@ -48,4 +48,55 @@ RunStartupTests() {
         T.Eq(Startup.IsEnabled(key, name, appr), false, "toggle desliga"),
         RegDeleteKey("HKCU\Software\HotPaste-Test")
     ))
+
+    T.Run("Startup.Repair reescreve caminho velho", () => (
+        key := "HKCU\Software\HotPaste-Test\Run",
+        appr := "HKCU\Software\HotPaste-Test\Approved",
+        name := "HotPasteTest",
+        Startup.Enable("C:\velho\HotPaste.exe", key, name, appr),
+        Startup.Repair("C:\novo\HotPaste.exe", key, name),
+        T.Eq(RegRead(key, name), '"C:\novo\HotPaste.exe" --tray', "caminho atualizado"),
+        RegDeleteKey("HKCU\Software\HotPaste-Test")
+    ))
+
+    T.Run("Startup.Repair deixa igual e ausente como estao", () => (
+        key := "HKCU\Software\HotPaste-Test\Run",
+        appr := "HKCU\Software\HotPaste-Test\Approved",
+        name := "HotPasteTest",
+        Startup.Disable(key, name),
+        Startup.Repair("C:\x\HotPaste.exe", key, name),
+        T.Eq(Startup.IsEnabled(key, name, appr), false, "ausente continua ausente"),
+        Startup.Enable("C:\x\HotPaste.exe", key, name, appr),
+        Startup.Repair("C:\x\HotPaste.exe", key, name),
+        T.Eq(RegRead(key, name), '"C:\x\HotPaste.exe" --tray', "igual continua igual"),
+        RegDeleteKey("HKCU\Software\HotPaste-Test")
+    ))
+
+    T.Run("Startup.Repair preserva desativado pelo usuario", () => (
+        key := "HKCU\Software\HotPaste-Test\Run",
+        appr := "HKCU\Software\HotPaste-Test\Approved",
+        name := "HotPasteTest",
+        Startup.Enable("C:\velho\HotPaste.exe", key, name, appr),
+        RegWrite("030000000000000000000000", "REG_BINARY", appr, name),
+        Startup.Repair("C:\novo\HotPaste.exe", key, name),
+        T.Eq(RegRead(key, name), '"C:\novo\HotPaste.exe" --tray', "caminho atualizado"),
+        T.Eq(Startup.IsEnabled(key, name, appr), false, "marcador desativado sobrevive"),
+        RegDeleteKey("HKCU\Software\HotPaste-Test")
+    ))
+
+    T.Run("Startup.SetEnabled", () => (
+        key := "HKCU\Software\HotPaste-Test\Run",
+        appr := "HKCU\Software\HotPaste-Test\Approved",
+        name := "HotPasteTest",
+        Startup.Disable(key, name),
+        Startup.SetEnabled(true, "C:\x\HotPaste.exe", key, name, appr),
+        T.Eq(Startup.IsEnabled(key, name, appr), true, "liga"),
+        Startup.SetEnabled(true, "C:\x\HotPaste.exe", key, name, appr),
+        T.Eq(Startup.IsEnabled(key, name, appr), true, "ligar de novo continua ligado"),
+        Startup.SetEnabled(false, "C:\x\HotPaste.exe", key, name, appr),
+        T.Eq(Startup.IsEnabled(key, name, appr), false, "desliga"),
+        Startup.SetEnabled(false, "C:\x\HotPaste.exe", key, name, appr),
+        T.Eq(Startup.IsEnabled(key, name, appr), false, "desligar de novo continua desligado"),
+        RegDeleteKey("HKCU\Software\HotPaste-Test")
+    ))
 }

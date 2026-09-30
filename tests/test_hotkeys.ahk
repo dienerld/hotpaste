@@ -55,9 +55,35 @@ RunHotkeyTests() {
     T.Run("Fire engole erro da colagem", () => (
         cfg := Config(TempIni()),
         cfg.Set(6, "x"),
-        mgr := HotkeyManager(cfg, (t) => (_ := 1 / 0)),
+        called := [],
+        mgr := HotkeyManager(cfg, (t) => (called.Push(t), _ := 1 / 0)),
         mgr.Fire("F6"),
         T.True(true, "nao lancou"),
+        T.Eq(called.Length, 1, "a colagem foi chamada"),
+        T.Eq(A_IsCritical, 0, "thread nao ficou em Critical"),
+        Cleanup(cfg.path)
+    ))
+
+    ; F1–F8 não podem colar dentro da própria janela do HotPaste
+    T.Run("suprimido: IsActive falso e Fire nao cola", () => (
+        cfg := Config(TempIni()),
+        cfg.Set(2, "oi"),
+        calls := [],
+        mgr := HotkeyManager(cfg, (t) => calls.Push(t), () => true),
+        T.Eq(mgr.IsActive("F2"), false, "IsActive falso"),
+        mgr.Fire("F2"),
+        T.Eq(calls.Length, 0, "nada colado"),
+        Cleanup(cfg.path)
+    ))
+
+    T.Run("nao suprimido: comportamento normal", () => (
+        cfg := Config(TempIni()),
+        cfg.Set(2, "oi"),
+        calls := [],
+        mgr := HotkeyManager(cfg, (t) => calls.Push(t), () => false),
+        T.Eq(mgr.IsActive("F2"), true, "IsActive verdadeiro"),
+        mgr.Fire("F2"),
+        T.Eq(calls.Length, 1, "colou"),
         Cleanup(cfg.path)
     ))
 }

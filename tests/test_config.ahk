@@ -75,6 +75,8 @@ RunConfigTests() {
         T.Eq(c.Get(1), "", "F1 sem '=' ignorado"),
         T.Eq(c.Get(2), "ok", "F2 valido"),
         T.Eq(c.Get(3), "a=b", "so o primeiro '=' separa"),
+        T.Eq(c.slots.Count, 8, "continua com 8 slots"),
+        T.True(!c.slots.Has(0) && !c.slots.Has(9), "F0 e F9 ignorados"),
         Cleanup(p)
     ))
 
@@ -115,5 +117,33 @@ RunConfigTests() {
         T.Eq(Config.Decode("a\nb\\"), "a`nb\", "decode"),
         T.Eq(Config.Decode("\x"), "\x", "escape desconhecido fica"),
         T.Eq(Config.ToWindows("a`nb"), "a`r`nb", "ToWindows")
+    ))
+
+    ; Save devolve o resultado da gravação; Set repassa
+    T.Run("Set devolve o resultado do Save", () => (
+        c := Config(TempIni()),
+        T.Eq(c.Set(1, "x"), true, "caminho gravavel"),
+        Cleanup(c.path),
+        d := Config(A_Temp "\hotpaste-no-such-dir-" A_TickCount ".ini"),
+        T.Eq(d.Set(1, "x"), false, "pasta inexistente")
+    ))
+
+    ; Gravação atômica: escreve em .tmp e move
+    T.Run("Save nao deixa .tmp", () => (
+        p := TempIni(),
+        c := Config(p),
+        c.Set(1, "a`nb"),
+        T.Eq(FileExist(p ".tmp"), "", "sem .tmp"),
+        d := Config(p),
+        d.Load(),
+        T.Eq(d.Get(1), "a`nb", "conteudo ok"),
+        Cleanup(p)
+    ))
+
+    T.Run("Save que falha nao deixa .tmp", () => (
+        p := A_Temp "\hotpaste-no-such-dir-" A_TickCount ".ini",
+        c := Config(p),
+        T.Eq(c.Save(), false, "falha"),
+        T.Eq(FileExist(p ".tmp"), "", "sem .tmp")
     ))
 }
