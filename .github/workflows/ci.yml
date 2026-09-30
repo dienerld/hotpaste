@@ -36,3 +36,31 @@ jobs:
           if (-not $p.WaitForExit(60000)) { $p.Kill(); throw "Testes travaram (timeout de 60s)" }
           if (Test-Path tests\results.txt) { Get-Content tests\results.txt } else { throw "tests\results.txt não foi gerado" }
           if ($p.ExitCode -ne 0) { throw "Testes falharam (exit $($p.ExitCode))" }
+
+      - name: Compilar HotPaste.exe
+        shell: pwsh
+        run: |
+          $ahk2exe = Get-ChildItem tools\ahk2exe -Recurse -Filter Ahk2Exe.exe | Select-Object -First 1
+          $ahkArgs = @("/in", "$PWD\src\main.ahk", "/out", "$PWD\HotPaste.exe", "/icon", "$PWD\assets\icon.ico", "/base", "$PWD\tools\ahk\AutoHotkey64.exe", "/silent")
+          $p = Start-Process $ahk2exe.FullName -ArgumentList $ahkArgs -PassThru
+          if (-not $p.WaitForExit(120000)) { $p.Kill(); throw "Ahk2Exe travou (timeout)" }
+          if (-not (Test-Path HotPaste.exe)) { throw "HotPaste.exe não foi gerado (exit $($p.ExitCode))" }
+
+      - name: Teste de fumaça do .exe
+        shell: pwsh
+        run: |
+          $app = Start-Process "$PWD\HotPaste.exe" -ArgumentList "--tray" -PassThru
+          Start-Sleep -Seconds 4
+          if ($app.HasExited) { throw "HotPaste.exe encerrou sozinho (exit $($app.ExitCode))" }
+          $app.Kill()
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: HotPaste
+          path: HotPaste.exe
+
+      - name: Publicar Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: HotPaste.exe
