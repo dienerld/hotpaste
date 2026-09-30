@@ -10,7 +10,7 @@ App Windows para público leigo que associa textos pré-definidos às teclas F1 
 
 - Funciona em qualquer programa, enquanto o processo do app estiver rodando (ícone na bandeja).
 - Nome: **HotPaste** (`HotPaste.exe`); a pasta do repositório continua `replace-f`.
-- Ícone: `assets/icon.svg` (fonte), `assets/icon.ico` (16–256 px) e `assets/icon.png` (prévia) — tecla azul com "F" e linhas de texto. O `.ico` é usado no `.exe` (Ahk2Exe `/icon`) e no ícone da bandeja.
+- Ícone: `assets/icon.svg` (fonte), `assets/icon.ico` (16–256 px) e `assets/icon.png` (prévia) — tecla azul com "F", linhas de texto e uma chama (o "Hot" do nome). O `.ico` é usado no `.exe` (Ahk2Exe `/icon`) e no ícone da bandeja.
 - Tecnologia: **AutoHotkey v2**, compilado em um único `.exe` (sem instalador, sem admin).
 - Desenvolvimento no Linux; teste em uma máquina Windows; build do `.exe` via **GitHub Actions** (`windows-latest`).
 - Slot vazio mantém a função original da tecla (ex.: F5 atualiza); slot preenchido vira texto e bloqueia a tecla original.

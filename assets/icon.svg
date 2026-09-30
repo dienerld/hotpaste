@@ -11,6 +11,11 @@
   <rect x="12" y="12" width="232" height="216" rx="44" fill="url(#face)"/>
   <!-- letra F -->
   <path fill="#FFFFFF" d="M64 44h96a12 12 0 0 1 0 24h-68v20h52a12 12 0 0 1 0 24h-52v10a12 12 0 0 1-24 0V56a12 12 0 0 1 12-12z"/>
+  <!-- chama (Hot) -->
+  <g transform="translate(47.2 42) scale(0.8)">
+    <path fill="#F97316" d="M196 40C210 62 226 72 226 96C226 116 212 128 196 128C180 128 166 116 166 98C166 86 174 78 180 68C182 76 186 80 190 80C188 66 190 52 196 40Z"/>
+    <path fill="#FDE047" d="M196 74C204 90 212 98 212 110C212 120 205 126 196 126C187 126 180 120 180 110C180 103 185 98 189 91C191 96 193 98 195 98C194 90 194 82 196 74Z"/>
+  </g>
   <!-- linhas de texto -->
   <rect x="64" y="168" width="128" height="14" rx="7" fill="#FFFFFF" opacity="0.95"/>
   <rect x="64" y="192" width="96" height="14" rx="7" fill="#FFFFFF" opacity="0.75"/>
