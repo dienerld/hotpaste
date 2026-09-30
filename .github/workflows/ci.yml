@@ -1,0 +1,38 @@
+name: ci
+
+on:
+  push:
+    branches: ["**"]
+    tags: ["v*"]
+  pull_request:
+
+permissions:
+  contents: write
+
+env:
+  AHK_VERSION: "2.0.28"
+  AHK2EXE_TAG: "Ahk2Exe1.1.37.02a2"
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Baixar AutoHotkey e Ahk2Exe
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download "v$env:AHK_VERSION" --repo AutoHotkey/AutoHotkey --pattern "AutoHotkey_$env:AHK_VERSION.zip" --dir tools
+          gh release download $env:AHK2EXE_TAG --repo AutoHotkey/Ahk2Exe --pattern "$env:AHK2EXE_TAG.zip" --dir tools
+          Expand-Archive "tools/AutoHotkey_$env:AHK_VERSION.zip" tools/ahk
+          Expand-Archive "tools/$env:AHK2EXE_TAG.zip" tools/ahk2exe
+
+      - name: Testes
+        shell: pwsh
+        run: |
+          $p = Start-Process "$PWD\tools\ahk\AutoHotkey64.exe" -ArgumentList "`"$PWD\tests\run.ahk`"" -PassThru
+          if (-not $p.WaitForExit(60000)) { $p.Kill(); throw "Testes travaram (timeout de 60s)" }
+          if (Test-Path tests\results.txt) { Get-Content tests\results.txt } else { throw "tests\results.txt não foi gerado" }
+          if ($p.ExitCode -ne 0) { throw "Testes falharam (exit $($p.ExitCode))" }
