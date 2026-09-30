@@ -22,7 +22,7 @@ class Config {
 
     Set(n, text) {
         this.slots[n] := Config.NormalizeNewlines(text)
-        this.Save()
+        return this.Save()
     }
 
     ; Vazio = nada além de espaço/tab/quebra de linha.
@@ -49,17 +49,20 @@ class Config {
         }
     }
 
-    ; Devolve false (sem lançar erro) se a pasta não permitir gravar.
+    ; Devolve true se gravou; false (sem lançar erro) se a pasta não permitir gravar.
     Save() {
         text := "[HotPaste]`r`n"
         loop Config.SLOTS
             text .= "F" A_Index "=" Config.Encode(this.slots[A_Index]) "`r`n"
+        tmp := this.path ".tmp"
         try {
-            f := FileOpen(this.path, "w", "UTF-8-RAW")
+            f := FileOpen(tmp, "w", "UTF-8-RAW")
             f.Write(text)
             f.Close()
+            FileMove(tmp, this.path, 1)   ; troca atômica: nunca deixa o .ini pela metade
             return true
         } catch {
+            try FileDelete(tmp)
             return false
         }
     }
