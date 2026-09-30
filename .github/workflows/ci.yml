@@ -4,10 +4,9 @@ on:
   push:
     branches: ["**"]
     tags: ["v*"]
-  pull_request:
 
 permissions:
-  contents: write
+  contents: read
 
 env:
   AHK_VERSION: "2.0.28"
@@ -17,7 +16,9 @@ jobs:
   build:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Baixar AutoHotkey e Ahk2Exe
         shell: pwsh
@@ -50,17 +51,33 @@ jobs:
         shell: pwsh
         run: |
           $app = Start-Process "$PWD\HotPaste.exe" -ArgumentList "--tray" -PassThru
-          Start-Sleep -Seconds 4
-          if ($app.HasExited) { throw "HotPaste.exe encerrou sozinho (exit $($app.ExitCode))" }
-          $app.Kill()
+          try {
+            Start-Sleep -Seconds 4
+            if ($app.HasExited) { throw "HotPaste.exe encerrou sozinho (exit $($app.ExitCode))" }
+            # Com --tray nenhuma janela deve estar visível; um diálogo de erro do AutoHotkey mantém o processo vivo mas aparece aqui.
+            $app.Refresh()
+            if ($app.MainWindowHandle -ne 0) { throw "janela/diálogo inesperado com --tray" }
+          } finally {
+            if (-not $app.HasExited) { $app.Kill() }
+          }
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: HotPaste
           path: HotPaste.exe
 
+  release:
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: HotPaste
+
       - name: Publicar Release
-        if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
           files: HotPaste.exe
