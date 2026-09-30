@@ -26,16 +26,30 @@ cfg.Load()
 
 ; Primeira execução (sem .ini): liga "Iniciar com o Windows" e grava o .ini para
 ; que a decisão não se repita (desmarcar depois é respeitado). Só no .exe.
+; Se não der para gravar o .ini, não liga o autostart (senão religaria a cada abertura).
 if cfg.firstRun {
-    if A_IsCompiled
-        Startup.Enable(A_ScriptFullPath)
-    cfg.Save()
+    if cfg.Save() {
+        if A_IsCompiled
+            Startup.Enable(A_ScriptFullPath)
+    } else {
+        WarnSaveFailed()
+    }
+}
+
+; Se o .exe foi movido, atualiza o caminho do autostart (sem religar se o usuário desativou).
+if A_IsCompiled
+    Startup.Repair(A_ScriptFullPath)
+
+ShowWindow() {
+    win.Show()
+    tray.Refresh()   ; a marca do menu pode ter ficado velha (Gerenciador de Tarefas)
 }
 
 win := MainWindow(cfg, () => tray.Refresh())
-tray := TrayMenu(() => win.Show(), () => win.RefreshStartup())
-hotkeys := HotkeyManager(cfg, PasteText)
+tray := TrayMenu(ShowWindow, () => win.RefreshStartup())
+; F1–F8 não colam dentro da própria janela do HotPaste (senão o texto vai parar no campo).
+hotkeys := HotkeyManager(cfg, PasteText, () => WinActive("ahk_id " win.gui.Hwnd))
 hotkeys.Register()
 
 if !HasArg("--tray")
-    win.Show()
+    ShowWindow()
