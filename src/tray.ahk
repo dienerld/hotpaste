@@ -34,6 +34,28 @@ class Startup {
         try RegDelete(key, name)
     }
 
+    ; Corrige o caminho gravado em Run quando o .exe foi movido. Só reescreve o
+    ; valor de Run: não mexe em StartupApproved (respeita o Gerenciador de Tarefas).
+    static Repair(exePath, key := Startup.KEY, name := Startup.NAME) {
+        try {
+            current := RegRead(key, name)
+        } catch {
+            return false   ; ausente: o usuário não quer iniciar com o Windows
+        }
+        if current !== Startup.Command(exePath) {
+            RegWrite(Startup.Command(exePath), "REG_SZ", key, name)
+            return true
+        }
+        return false
+    }
+
+    static SetEnabled(enabled, exePath, key := Startup.KEY, name := Startup.NAME, approvedKey := Startup.APPROVED_KEY) {
+        if enabled
+            Startup.Enable(exePath, key, name, approvedKey)
+        else
+            Startup.Disable(key, name)
+    }
+
     static Toggle(exePath, key := Startup.KEY, name := Startup.NAME, approvedKey := Startup.APPROVED_KEY) {
         if Startup.IsEnabled(key, name, approvedKey)
             Startup.Disable(key, name)

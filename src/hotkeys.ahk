@@ -19,9 +19,12 @@ PasteText(text, delayMs := 150) {
 
 class HotkeyManager {
     ; paste: objeto chamável (text) => …  (em produção, PasteText)
-    __New(cfg, paste) {
+    ; isSuppressed: opcional, chamável () => bool; se devolver true as teclas
+    ; passam sem colar (usado para não colar dentro da própria janela).
+    __New(cfg, paste, isSuppressed?) {
         this.cfg := cfg
         this.paste := paste
+        this.isSuppressed := IsSet(isSuppressed) ? isSuppressed : false
         this.criterion := ObjBindMethod(this, "IsActive")
         this.action := ObjBindMethod(this, "Fire")
     }
@@ -32,15 +35,25 @@ class HotkeyManager {
         return 0
     }
 
+    Suppressed() {
+        if !this.isSuppressed
+            return false
+        try {
+            return !!this.isSuppressed.Call()
+        } catch {
+            return false
+        }
+    }
+
     ; Usado pelo HotIf: só intercepta a tecla se o slot tem texto.
     IsActive(name, *) {
         n := HotkeyManager.SlotFromKey(name)
-        return n > 0 && this.cfg.IsFilled(n)
+        return n > 0 && !this.Suppressed() && this.cfg.IsFilled(n)
     }
 
     Fire(name, *) {
         n := HotkeyManager.SlotFromKey(name)
-        if n = 0 || !this.cfg.IsFilled(n)
+        if n = 0 || this.Suppressed() || !this.cfg.IsFilled(n)
             return
         Critical "On"   ; evita duas colagens embaralhando a área de transferência
         try {
